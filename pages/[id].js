@@ -23,12 +23,21 @@ export default ({ id }) => {
   //   }
   // }, [props])
 
-  return <div>
-    <button onClick={
+  return <div
+    style={{
+      width: '100vw',
+      height: '100vh',
+      backgroundColor: main.theme == 'light' ? '#fff' : '#000',
+      color: main.theme == 'light' ? '#000' : '#fff',
+      textAlign: 'center',
+      lineHeight: '100vh',
+      cursor: 'pointer',
+    }}
+    onClick={
       () => dispatch(changeTheme(main.theme == 'light' ? 'dark' : 'light'))
-    }>
-      { t('test') } — {main.theme} — { id }
-    </button>
+    }
+  >
+    { t('test') } — {main.theme} — { id }
   </div>
 }
 

@@ -1,10 +1,10 @@
 // import { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+// import { bindActionCreators } from 'redux'
 import Link from 'next/link'
-import { addCount } from '../redux/count/action'
+// import { addCount } from '../redux/count/action'
 import { wrapper } from '../redux/store'
-import { serverRenderClock, startClock } from '../redux/tick/action'
+// import { serverRenderClock, startClock } from '../redux/tick/action'
 
 const Index = props => {
   // useEffect(() => {
@@ -19,14 +19,14 @@ const Index = props => {
 }
 
 export const getStaticProps = wrapper.getStaticProps((store) => () => {
-  store.dispatch(serverRenderClock(true))
-  store.dispatch(addCount())
+  // store.dispatch(serverRenderClock(true))
+  // store.dispatch(addCount())
 })
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addCount: bindActionCreators(addCount, dispatch),
-    startClock: bindActionCreators(startClock, dispatch),
+    // addCount: bindActionCreators(addCount, dispatch),
+    // startClock: bindActionCreators(startClock, dispatch),
   }
 }
 

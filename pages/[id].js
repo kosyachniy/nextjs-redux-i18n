@@ -1,12 +1,20 @@
-import { useEffect } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { addCount } from '../redux/count/action'
+// import { useEffect } from 'react'
+// import { connect } from 'react-redux'
+// import { bindActionCreators } from 'redux'
+import { useSelector, useDispatch } from 'react-redux'
+// import { addCount } from '../redux/count/action'
 import { wrapper } from '../redux/store'
-import { serverRenderClock, startClock } from '../redux/tick/action'
+// import { serverRenderClock, startClock } from '../redux/tick/action'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
+import { changeTheme } from '../redux/actions/main'
+
 export default ({ id }) => {
+  const { t } = useTranslation('common')
+  const dispatch = useDispatch()
+  const main = useSelector(state => state.main)
+
   // useEffect(() => {
   //   const timer = props.startClock()
 
@@ -15,13 +23,19 @@ export default ({ id }) => {
   //   }
   // }, [props])
 
-  return <div>{ id }</div>
+  return <div>
+    <button onClick={
+      () => dispatch(changeTheme(main.theme == 'light' ? 'dark' : 'light'))
+    }>
+      { t('test') } — {main.theme} — { id }
+    </button>
+  </div>
 }
 
 export const getServerSideProps = wrapper.getServerSideProps(store => async ({ query, locale }) => {
-  store.dispatch(serverRenderClock(true))
-  store.dispatch(addCount())
-  console.log(query, locale)
+  // store.dispatch(serverRenderClock(true))
+  // store.dispatch(addCount())
+
   return {
     props: {
       id: query.id,

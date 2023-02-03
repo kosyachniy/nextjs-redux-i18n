@@ -1,21 +1,21 @@
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import Page from '../components/Page'
-import { addCount } from '../store/count/action'
-import { wrapper } from '../store/store'
-import { serverRenderClock, startClock } from '../store/tick/action'
+import Link from 'next/link'
+import { addCount } from '../redux/count/action'
+import { wrapper } from '../redux/store'
+import { serverRenderClock, startClock } from '../redux/tick/action'
 
-const Index = (props) => {
-  useEffect(() => {
-    const timer = props.startClock()
+const Index = props => {
+  // useEffect(() => {
+  //   const timer = props.startClock()
 
-    return () => {
-      clearInterval(timer)
-    }
-  }, [props])
+  //   return () => {
+  //     clearInterval(timer)
+  //   }
+  // }, [props])
 
-  return <Page title="Index Page" linkTo="/other" />
+  return <Link href="/888">Navigate</Link>
 }
 
 export const getStaticProps = wrapper.getStaticProps((store) => () => {

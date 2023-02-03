@@ -11,9 +11,12 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { changeTheme } from '../redux/actions/main'
 
 export default ({ id }) => {
+// export default connect(state => state, {setClientState})(({fromServer, fromClient, setClientState, id}) => {
   const { t } = useTranslation('common')
   const dispatch = useDispatch()
   const main = useSelector(state => state.main)
+
+  console.log('@@@', main.theme)
 
   // useEffect(() => {
   //   const timer = props.startClock()

@@ -1,43 +1,50 @@
-import { configureStore } from '@reduxjs/toolkit';
-import {
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { HYDRATE, createWrapper } from 'next-redux-wrapper'
+import logger from 'redux-logger';
+import {applyMiddleware, createStore} from 'redux';
+import {createWrapper} from 'next-redux-wrapper';
 
-import combinedReducer from './reducers/index.ts';
+const SET_CLIENT_STATE = 'SET_CLIENT_STATE';
 
-
-const reducer = (state, action) => {
-  if (action.type === HYDRATE) {
-    const nextState = {
+export const reducer = (state, {type, payload}) => {
+  // Usual stuff with HYDRATE handler
+  if (type === SET_CLIENT_STATE) {
+    return {
       ...state,
-      ...action.payload,
-    }
-    return nextState
-  } else {
-    return combinedReducer(state, action)
+      fromClient: payload,
+    };
   }
-}
+  return state;
+};
 
-export const wrapper = createWrapper(() => configureStore({
-  reducer: persistReducer(
-    {
-      key: 'root',
+const makeConfiguredStore = reducer => createStore(reducer, undefined, applyMiddleware(logger));
+
+const makeStore = () => {
+  const isServer = typeof window === 'undefined';
+
+  if (isServer) {
+    return makeConfiguredStore(reducer);
+  } else {
+    // we need it only on client side
+    const {persistStore, persistReducer} = require('redux-persist');
+    const storage = require('redux-persist/lib/storage').default;
+
+    const persistConfig = {
+      key: 'nextjs',
+      whitelist: ['fromClient'], // make sure it does not clash with server keys
       storage,
-      whitelist: ['main', 'profile'],
-    },
-    reducer,
-  ),
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    serializableCheck: {
-      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-    },
-  }),
-}))
+    };
+
+    const persistedReducer = persistReducer(persistConfig, reducer);
+    const store = makeConfiguredStore(persistedReducer);
+
+    store.__persistor = persistStore(store); // Nasty hack
+
+    return store;
+  }
+};
+
+export const wrapper = createWrapper(makeStore);
+
+export const setClientState = clientState => ({
+  type: SET_CLIENT_STATE,
+  payload: clientState,
+});

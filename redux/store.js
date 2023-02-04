@@ -1,50 +1,50 @@
-import logger from 'redux-logger';
-import {applyMiddleware, createStore} from 'redux';
-import {createWrapper} from 'next-redux-wrapper';
+import { configureStore } from '@reduxjs/toolkit';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { HYDRATE, createWrapper } from 'next-redux-wrapper'
 
-const SET_CLIENT_STATE = 'SET_CLIENT_STATE';
+import combinedReducer from './reducers/index.ts';
 
-export const reducer = (state, {type, payload}) => {
-  // Usual stuff with HYDRATE handler
-  if (type === SET_CLIENT_STATE) {
-    return {
+
+const reducer = (state, action) => {
+  if (action.type === HYDRATE) {
+    const nextState = {
       ...state,
-      fromClient: payload,
-    };
-  }
-  return state;
-};
-
-const makeConfiguredStore = reducer => createStore(reducer, undefined, applyMiddleware(logger));
-
-const makeStore = () => {
-  const isServer = typeof window === 'undefined';
-
-  if (isServer) {
-    return makeConfiguredStore(reducer);
+      ...action.payload,
+    }
+    return nextState
   } else {
-    // we need it only on client side
-    const {persistStore, persistReducer} = require('redux-persist');
-    const storage = require('redux-persist/lib/storage').default;
-
-    const persistConfig = {
-      key: 'nextjs',
-      whitelist: ['fromClient'], // make sure it does not clash with server keys
-      storage,
-    };
-
-    const persistedReducer = persistReducer(persistConfig, reducer);
-    const store = makeConfiguredStore(persistedReducer);
-
-    store.__persistor = persistStore(store); // Nasty hack
-
-    return store;
+    return combinedReducer(state, action)
   }
-};
+}
 
-export const wrapper = createWrapper(makeStore);
-
-export const setClientState = clientState => ({
-  type: SET_CLIENT_STATE,
-  payload: clientState,
-});
+export const wrapper = createWrapper(() => {
+  const store = configureStore({
+    reducer: persistReducer(
+      {
+        key: 'root',
+        storage,
+        whitelist: ['main', 'profile'],
+      },
+      reducer,
+    ),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+  })
+  store.__persistor = persistStore(store, {}, () => {
+    console.log('Hydrated')
+  });
+  return store;
+})

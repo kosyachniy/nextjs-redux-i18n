@@ -1,15 +1,9 @@
-import React from 'react';
-import App from 'next/app';
-import {useStore} from 'react-redux';
-import {wrapper} from '../redux/store';
-import {PersistGate} from 'redux-persist/integration/react';
+import { wrapper } from '../redux/store'
+import { appWithTranslation } from 'next-i18next'
 
-export default wrapper.withRedux(({Component, pageProps}) => {
-  const store = useStore();
-  return (
-    <PersistGate persistor={store.__persistor} loading={<div>Loading</div>}>
-      {/* <Component {...pageProps} /> */}
-      { () => <Component {...pageProps} /> }
-    </PersistGate>
-  );
-});
+
+const WrappedApp = ({ Component, pageProps }) => {
+  return <Component {...pageProps} />
+}
+
+export default wrapper.withRedux(appWithTranslation(WrappedApp))

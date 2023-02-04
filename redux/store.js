@@ -47,4 +47,4 @@ export const wrapper = createWrapper(() => {
     console.log('Hydrated')
   });
   return store;
-})
+});

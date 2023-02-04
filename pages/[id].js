@@ -1,15 +1,13 @@
-import { useSelector, useDispatch } from 'react-redux'
-import { wrapper } from '../redux/store'
+import React from 'react'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import {connect} from 'react-redux'
 
 import { changeTheme } from '../redux/actions/main'
 
 
-export default ({ id }) => {
+export default connect(state => state, {changeTheme})(({main, changeTheme, id}) => {
   const { t } = useTranslation('common')
-  const dispatch = useDispatch()
-  const main = useSelector(state => state.main)
 
   console.log('@@@', main.theme)
 
@@ -24,18 +22,17 @@ export default ({ id }) => {
       cursor: 'pointer',
     }}
     onClick={
-      () => dispatch(changeTheme(main.theme == 'light' ? 'dark' : 'light'))
+      () => changeTheme(main.theme == 'light' ? 'dark' : 'light')
     }
   >
     { t('test') } — {main.theme} — { id }
   </div>
-}
+})
 
-export const getServerSideProps = wrapper.getServerSideProps(store => async ({ query, locale }) => {
-  return {
-    props: {
-      id: query.id,
-      ...await serverSideTranslations(locale, ['common']),
-    },
-  }
+
+export const getServerSideProps = async ({ query, locale }) => ({
+  props: {
+    id: query.id,
+    ...await serverSideTranslations(locale, ['common']),
+  },
 })

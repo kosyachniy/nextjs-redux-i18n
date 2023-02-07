@@ -10,24 +10,22 @@ import {
   REGISTER,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { HYDRATE, createWrapper } from 'next-redux-wrapper'
+import { HYDRATE, createWrapper } from 'next-redux-wrapper';
 
 import combinedReducer from './reducers/index.ts';
-
 
 const reducer = (state, action) => {
   if (action.type === HYDRATE) {
     const nextState = {
       ...state,
       ...action.payload,
-    }
-    return nextState
-  } else {
-    return combinedReducer(state, action)
+    };
+    return nextState;
   }
-}
+  return combinedReducer(state, action);
+};
 
-export const wrapper = createWrapper(() => {
+export default createWrapper(() => {
   const store = configureStore({
     reducer: persistReducer(
       {
@@ -42,8 +40,8 @@ export const wrapper = createWrapper(() => {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
-  })
-  store.__persistor = persistStore(store, {}, () => {
+  });
+  store.__persistor = persistStore(store, {}, () => { /* eslint-disable-line */
     console.log('Hydrated')
   });
   return store;

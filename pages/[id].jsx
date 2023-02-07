@@ -1,12 +1,15 @@
-import React from 'react'
+import { connect } from 'react-redux'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import {connect} from 'react-redux'
 
 import { changeTheme } from '../redux/actions/main'
 
 
-export default connect(state => state, {changeTheme})(({main, changeTheme, id}) => {
+const Container = ({
+  main,
+  changeTheme,
+  id,
+}) => {
   const { t } = useTranslation('common')
 
   console.log('@@@', main.theme)
@@ -27,8 +30,9 @@ export default connect(state => state, {changeTheme})(({main, changeTheme, id}) 
   >
     { t('test') } — {main.theme} — { id }
   </div>
-})
+}
 
+export default connect(state => state, { changeTheme })(Container)
 
 export const getServerSideProps = async ({ query, locale }) => ({
   props: {

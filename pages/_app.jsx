@@ -1,6 +1,6 @@
 import { appWithTranslation } from 'next-i18next'
 
-import { wrapper } from '../redux/store'
+import wrapper from '../redux/store'
 
 
 const App = ({ Component, pageProps }) => {
